@@ -1,0 +1,171 @@
+<modification>
+<id>Phplist Bridge</id>
+	<version>1.5.x</version>
+	<vqmver>2.2.1</vqmver>
+	<author>Jason Clark (mithereal@gmail.com)</author>
+
+
+
+
+
+
+
+<file name="admin/controller/common/header.php">
+<operation>
+<search position="before" error="log"><![CDATA[
+$this->language->load('common/header');
+]]></search>
+
+<add><![CDATA[
+//start Phplist Bridge
+$this->language->load('module/phplist');
+$this->data['text_title'] = $this->language->get('heading_contact');
+$this->data['text_messages'] = $this->language->get('text_messages');
+$this->data['text_mailinglists'] = $this->language->get('text_mailinglists');
+$this->data['text_members'] = $this->language->get('text_members');
+$this->data['entry_event'] = $this->language->get('entry_event');
+    if(isset($this->session->data['token'])){
+$this->data['link'] = $this->url->link('module/phplist/contact', 'token=' . $this->session->data['token'], 'SSL');
+$this->data['msg_link'] = $this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'], 'SSL');
+$this->data['list_link'] = $this->url->link('module/phplist/lists', 'token=' . $this->session->data['token'], 'SSL');
+$this->data['users_link'] = $this->url->link('module/phplist/users', 'token=' . $this->session->data['token'], 'SSL');
+$this->data['event_link'] = $this->url->link('module/phplist/eventlog', 'token=' . $this->session->data['token'], 'SSL');
+}
+///end Phplist Bridge
+]]></add>
+
+</operation>
+</file>
+
+<file name="admin/view/template/common/header.tpl">
+<operation>
+<search position="after" error="log"><![CDATA[
+<li><a href="<?php echo $contact; ?>"><?php echo $text_contact; ?></a></li>
+]]></search>
+
+<add><![CDATA[
+      <li><a class="parent"><?php echo $text_title; ?></a>
+            <ul>
+              <li><a href="<?php echo $link; ?>"><?php echo $text_contact; ?></a></li>
+              <li><a href="<?php echo $msg_link; ?>"><?php echo $text_messages; ?></a></li>
+              <li><a href="<?php echo $list_link; ?>"><?php echo $text_mailinglists; ?></a></li>
+              <li><a href="<?php echo $users_link; ?>"><?php echo $text_members; ?></a></li>
+              <li><a href="<?php echo $event_link; ?>"><?php echo $entry_event; ?></a></li>
+            </ul>
+          </li>
+
+]]></add>
+
+</operation>
+</file>
+
+<file name="catalog/controller/account/register.php">
+<operation>
+<search position="before" error="log"><![CDATA[
+$this->load->model('account/customer');
+]]></search>
+<add><![CDATA[
+ //phplist start
+$this->load->model('phplist/user');
+$this->load->model('phplist/lists');
+$this->language->load('module/phplist');
+$this->data['entry_lists'] = $this->language->get('entry_lists');
+
+//phplist end
+]]></add>
+</operation>
+</file>
+
+<file name="catalog/controller/account/register.php">
+<operation>
+<search position="before" error="log"><![CDATA[
+$this->data['action'] = $this->url->link('account/register', '', 'SSL');
+]]></search>
+<add><![CDATA[
+ //phplist start
+$this->data['lists'] = $this->model_phplist_lists->getActivelists();
+//phplist end
+]]></add>
+</operation>
+</file>
+
+<file name="catalog/view/theme/default/template/account/register.tpl">
+<operation>
+<search position="before" error="log"><![CDATA[
+<?php if ($text_agree) { ?>
+]]></search>
+<add><![CDATA[
+<?php
+     if($lists) { 
+    ?>
+    <div class="content">
+      <table class="form">
+        <tr>
+          <td><?php echo $entry_lists; ?></td>
+          <td>
+              <?php 
+              foreach($lists as $list)
+              {
+              ?>
+              <input type="checkbox" name="<?php echo $list['name'];  ?>" value="<?php echo $list['id'];  ?>" /><?php echo $list['name'];  ?>
+              <?php
+              }
+             } ?>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+]]></add>
+</operation>
+</file>
+
+<file name="catalog/controller/account/register.php">
+<operation>
+<search position="after" error="log"><![CDATA[
+$this->model_account_customer->addCustomer($this->request->post);
+]]></search>
+<add><![CDATA[
+ //phplist start
+   
+$this->request->post['htmlemail']=1;
+                        $userid=$this->model_phplist_user->addUser($this->request->post);
+                       if(isset($this->request->post['newsletter']))
+                       {
+                       if(isset($this->request->post['lists']))
+                       {
+                         $lists=$this->request->post['lists'];
+
+                       foreach($lists as $list)
+                       {
+                       $user['userid']=$userid;
+                        $user['listid']=$list['id'];
+                        $this->model_phplist_lists->addListuser($user);
+                          }
+                        }else{
+
+                          $this->load->model('setting/setting');
+                          $defaultlist=$this->config->get('phplist_defaultlist');
+                         $user['userid']=$userid;
+                          $user['listid']=$defaultlist;
+                         $this->model_phplist_lists->addListuser($user);
+
+                        }
+                        }
+                        //phplist end
+]]></add>
+</operation>
+</file>
+<file name="catalog/view/theme/default/template/account/account.tpl">
+<operation>
+<search  error="log"><![CDATA[
+<li><a href="<?php echo $newsletter; ?>"><?php echo $text_newsletter; ?></a></li>
+]]></search>
+<add><![CDATA[
+
+<li><a href="<?php echo $this->url->link('module/phplist', '', 'SSL'); ?>"><?php echo $text_newsletter; ?></a></li>
+    
+]]></add>
+</operation>
+</file>
+</modification>

@@ -1,0 +1,35 @@
+PHPLIST BRIDGE
+
+IN5TALLATION INSTRUCTIONS:
+
+if you are already running phplist there are 2 options you can take
+====== option 1 ====
+1. install the module into opencart
+2. edit the module configurstion in particular the phplist db prefix field must match as follows databasename.dbprefix (ex. phplistdb.phplist_).
+note. both databases must be on the same server also the username and password the phplist database uses must match the opencart database auth credentials.
+
+===== option 2 ======
+you can import all your phplist tables into your opencart database (least issues/but potentially large opencart db in filesize)
+1. log into phpmyadmin
+2. take note of the dbprefix it will look like ex. phplist_tablename. phplist_ is the prefix.
+3. export the tables
+4. import the tables into your opencart database
+5. fix your phplist config to point to the new db
+6. install the module into opencart
+7. edit the module configuration in particular the phplist db prefix field must match the dbprefix phplist uses.
+------------------------------------------------------------------------------
+
+if you are not running phplist
+1. download phplist
+2. install using your opencart database as the installation db.
+3. install the module into opencart
+4. edit the module configuration in particular the phplist db prefix field must match the dbprefix phplist uses.
+-------------------------------------------------------------------
+
+potential issues:
+
+Sometimes if you use cpanel and install via softtaculous, you will not be given suffecent permissions to do a complete db export, the users and other tables will be locked, you can verify this by loggin into phpmyadmin and trying to browse/edit the users table. 
+
+If you do this method check that the use and password for both the opencart install and phplist, its under add user to the database in cpanel.
+
+When you are using different database to store phplist, sometines there is a prefix which does not show in cpanel, you may see under databases __ccmail, but is does not show you there is really a dbprefix of username__ccmail.
