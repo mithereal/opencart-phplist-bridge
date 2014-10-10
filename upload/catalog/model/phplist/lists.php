@@ -12,9 +12,16 @@ class ModelPhplistLists extends Model {
 	public function addList($data) {
 $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');     	
+         $listxist=$this->getListbyname($data['name']);
+         if($listxist == false)
+         {
 		$sql = "INSERT INTO " . $this->dbprefix . "list SET active = '".$data['active'] . "', description = '" . $data['description'] . "', name = '".$data['name'] . "'";
 		$this->db->query($sql);
-                
+                $listid=$this->db->getLastId();
+         }else{
+             $listid=$listxist['id'];
+         }
+                return $listid;
 	}
 	public function addListuser($data) {
 $this->load->model('setting/setting');
@@ -26,7 +33,7 @@ if($userxist == false && $data['listid'] !='')
 		$sql = "INSERT INTO " . $this->dbprefix . "listuser SET listid = '".$data['listid'] . "', userid = '" . $data['userid'] . "', entered = NOW()";
                // var_dump($data['userid']);
 		$this->db->query($sql);
-                //retrun id
+                $this->db->getLastId();
 	}
         }
 	public function editList($data) {
@@ -59,9 +66,11 @@ if($userxist == false && $data['listid'] !='')
 	}	
 	public function deletefromallLists($data) {
             $this->load->model('setting/setting');
-        $this->dbprefix=$this->config->get('dbprefix');
-		$this->db->query("DELETE  FROM " . $this->dbprefix . "listuser WHERE userid = '" . (int)$data['id'] . "'");
-		
+            $this->dbprefix=$this->config->get('dbprefix');
+            
+            if (isset($data['id'])) {
+				$this->db->query("DELETE  FROM " . $this->dbprefix . "listuser WHERE userid = '" . (int)$data['id'] . "'");
+				}
 	}	
         
         public function deleteListusers($id) {
@@ -83,11 +92,13 @@ if($userxist == false && $data['listid'] !='')
 		return $query->row;
 	}
         
-	public function getListbyname($list_id) {
+	public function getListbyname($list_name) {
             $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');
-		$query = $this->db->query("SELECT id FROM ". $this->dbprefix . "list WHERE name = '" . $list_id . "'");
-                
+        $sql="SELECT id FROM ". $this->dbprefix . "list WHERE name = '" . $list_name . "'";
+
+		$query = $this->db->query($sql);
+                return $query->row;
         }
         
         	public function getListsbymsgid($msg_id) {
@@ -146,8 +157,14 @@ if($userxist == false && $data['listid'] !='')
 
 			return $list_data;			
 		}
-                public function getActivelistmembers($data) {
+		
+             public function getActivelistmembers($data) {
             $this->load->model('setting/setting');
+            
+				if (!isset($data['id'])) {
+				$data['id'] = 0;
+				}
+				
         $this->dbprefix=$this->config->get('dbprefix');
                                 $sql = "SELECT *, l.userid as member FROM ".$this->dbprefix."list p left outer join  ".$this->dbprefix."listuser l  on p.id = l.listid && l.userid='".$data['id']."' WHERE active = 1";
                             //    var_dump($sql);
@@ -220,6 +237,7 @@ if($userxist == false && $data['listid'] !='')
 		return $query->row['total'];
 	}	
 	
+
 	public function getTotalListsByLayoutId($layout_id) {
             $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');

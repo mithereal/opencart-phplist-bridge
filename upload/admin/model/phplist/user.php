@@ -16,10 +16,27 @@ class ModelPhplistUser extends Model {
             $userxist=$this->getUserbyemail($data['email']);
             if($userxist == false)
             {
-            $data['uniqid']=md5(uniqid(time()));;
-            //check if user exist 
+            $data['uniqid']=md5(uniqid(time()));
+            $salt = substr(md5(uniqid(rand(), true)), 0, 9);
+            
+             if(!isset($data['rssfrequency']))
+            {
+            	$data['rssfrequency']='';
+            }
+            
+               if(!isset($data['confirmed']))
+            {
+            	 $data['confirmed']=0;
+            }
+            
+             if(!isset($data['htmlemail']))
+            {
+            	 $data['htmlemail']=1;
+            }
            
-		$this->db->query("INSERT INTO " .$this->dbprefix . "user_user SET email = '".$data['email']."',  htmlemail = '".$data['htmlemail'] ."', rssfrequency = '".$data['rssfrequency'] ."', confirmed = '".$data['confirmed'] ."', password = '".$data['password'] ."', disabled = '".$data['disabled'] ."', uniqid = '".$data['uniqid'] ."', entered = NOW()");
+            $data['disabled']=0;
+            //check if user exist 
+		$this->db->query("INSERT INTO " .$this->dbprefix . "user_user SET email = '".$data['email']."',  htmlemail = '".$data['htmlemail'] ."', rssfrequency = '".$data['rssfrequency'] ."', confirmed = '".$data['confirmed'] ."', password = '".$this->db->escape(sha1($salt . sha1($salt . sha1($data['password']))))."', disabled = '".$data['disabled'] ."', uniqid = '".$data['uniqid'] ."', entered = NOW()");
                 $data['userid']=$this->db->getLastId();
             }else{
                  $data['userid']=$userxist['id'];

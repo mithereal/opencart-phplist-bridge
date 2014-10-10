@@ -56,6 +56,7 @@ class ModelPhplistEvent extends Model {
                 
     $query= $this->db->query($sql);
 
+
         return $query->rows;
         }
         

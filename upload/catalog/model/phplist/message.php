@@ -9,6 +9,8 @@ class ModelPhplistMessage extends Model {
 
     public $dbprefix='phplist_';
     
+
+
 public function addMessage($data){
 $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');
@@ -35,7 +37,7 @@ public function getTotalmessages($status) {
         $this->dbprefix=$this->config->get('dbprefix');
      if(is_array($status))
         { 
-            $sql="SELECT COUNT(*) AS total FROM " . $this->dbprefix . "message where status = '".$status[0]."' || status = '".$status[1]."'";
+            $sql="SELECT COUNT(*) AS total FROM " . $this->dbprefix . "message where status = '".$status[0]."' || status = '".$status[1]."' || status = '".$status[2]."'";
 
         }else{
     $sql="SELECT COUNT(*) AS total FROM " . $this->dbprefix . "message where status='".$status."'";
@@ -90,12 +92,20 @@ public function getMessage($id){
              return $query->row; 
     }
     
+public function getMessagedata($id){
+    $this->load->model('setting/setting');
+        $this->dbprefix=$this->config->get('dbprefix');
+        $sql="SELECT  * FROM " . $this->dbprefix . "messagedata WHERE id = '" . (int)$id . "'";
+    $query= $this->db->query($sql);
+            return $query->rows; 
+    }
+    
     public function getMessages($status='submitted',$data=null){
         $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');
         if(is_array($status))
         { 
-            $sql="SELECT  * FROM " . $this->dbprefix . "message where status = '".$status[0]."' || status = '".$status[1]."'";
+            $sql="SELECT  * FROM " . $this->dbprefix . "message where status = '".$status[0]."' || status = '".$status[1]."' || status = '".$status[2]."'";
 
         }else{
         $sql="SELECT  * FROM " . $this->dbprefix . "message where status='".$status."'";

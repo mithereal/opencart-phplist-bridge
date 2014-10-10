@@ -113,7 +113,7 @@ class ModelPhplistUser extends Model {
         $this->dbprefix=$this->config->get('dbprefix');
 		if ($data) {
 			$sql = "SELECT DISTINCT email,confirmed, id FROM " .  $this->dbprefix  . "user_user u, " . $this->dbprefix . "listuser l WHERE l.listid = '" . (int)$data['listid']."' && u.id = l.userid";
-		
+		//TODO: make distinct usernames
 			$sort_data = array(
 				'l.modified'
 				
@@ -154,16 +154,44 @@ class ModelPhplistUser extends Model {
 						
 		}
 	
-	public function getMembers() {
+	public function getMembers($data = array()) {
             $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix');
-		$sql = "SELECT DISTINCT email,confirmed, id FROM " .  $this->dbprefix  . "user_user u, " . $this->dbprefix . "listuser l WHERE l.userid = u.id";
+			$sql = "SELECT DISTINCT email,confirmed, id FROM " .  $this->dbprefix  . "user_user u left outer join " . $this->dbprefix . "listuser l on l.userid = u.id";
 
-	
-	$query = $this->db->query($sql);
+			$sort_data = array(
+				'l.modified'
+				
+			);		
+		
+			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+				$sql .= " ORDER BY " . $data['sort'];	
+			} else {
+				$sql .= " ORDER BY l.modified";	
+			}
+			
+			if (isset($data['order']) && ($data['order'] == 'DESC')) {
+				$sql .= " DESC";
+			} else {
+				$sql .= " ASC";
+			}
+		
+			if (isset($data['start']) || isset($data['limit'])) {
+				if ($data['start'] < 0) {
+					$data['start'] = 0;
+				}		
+
+				if ($data['limit'] < 1) {
+					$data['limit'] = 20;
+				}	
+			
+				$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+			}	
+
+			$query = $this->db->query($sql);
 			
 			return $query->rows;
-						
+		
 		}
 
 	
@@ -173,10 +201,11 @@ class ModelPhplistUser extends Model {
             $this->load->model('setting/setting');
         $this->dbprefix=$this->config->get('dbprefix'); 
   
-      	$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "user");
+      	$query = $this->db->query("SELECT COUNT(*) AS total FROM " . $this->dbprefix . "user_user");
 		
 		return $query->row['total'];
 	}	
+	
 	
 	public function getTotalUsersByLayoutId($layout_id) {
             $this->load->model('setting/setting');

@@ -64,11 +64,14 @@ if($userxist == false && $data['listid'] !='')
 		$this->db->query("DELETE  FROM " . $this->dbprefix . "listuser WHERE userid = '" . (int)$data['id'] . "' && listid = '".$data['listid']."'");
 		
 	}	
+	
 	public function deletefromallLists($data) {
             $this->load->model('setting/setting');
-        $this->dbprefix=$this->config->get('dbprefix');
-		$this->db->query("DELETE  FROM " . $this->dbprefix . "listuser WHERE userid = '" . (int)$data['id'] . "'");
-		
+            $this->dbprefix=$this->config->get('dbprefix');
+            
+            if (isset($data['id'])) {
+				$this->db->query("DELETE  FROM " . $this->dbprefix . "listuser WHERE userid = '" . (int)$data['id'] . "'");
+				}
 	}	
         
         public function deleteListusers($id) {
@@ -120,8 +123,10 @@ if($userxist == false && $data['listid'] !='')
         $this->dbprefix=$this->config->get('dbprefix'); 
                                 $sql = "SELECT * FROM ".$this->dbprefix."list LIMIT 0, 100 ";
                                 $query=$this->db->query($sql);
-				
-			return $query->rows;		
+				$list_data = $query->rows;
+                                
+				//$this->cache->set('list.' . (int)$this->config->get('config_language_id'), $list_data);
+			return $list_data;			
 		}
 	public function getActivelists() {
             $this->load->model('setting/setting');
@@ -138,8 +143,9 @@ if($userxist == false && $data['listid'] !='')
         $this->dbprefix=$this->config->get('dbprefix');
                                 $sql = "SELECT *, l.userid as member FROM ".$this->dbprefix."list p left outer join  ".$this->dbprefix."listuser l  on p.id = l.listid";
                                 $query=$this->db->query($sql);
+				$list_data = $query->rows;
 
-			return $query->rows;			
+			return $list_data;			
 		}
                 
                 public function getListmembers($data) {
@@ -147,8 +153,25 @@ if($userxist == false && $data['listid'] !='')
         $this->dbprefix=$this->config->get('dbprefix');
                                 $sql = "SELECT *, l.userid as member FROM ".$this->dbprefix."list p left outer join  ".$this->dbprefix."listuser l  on p.id = l.listid && l.userid='".$data."'";
                                 $query=$this->db->query($sql);
-			
-			return $query->rows;		
+				$list_data = $query->rows;
+
+			return $list_data;			
+		}
+		
+             public function getActivelistmembers($data) {
+            $this->load->model('setting/setting');
+            
+				if (!isset($data['id'])) {
+				$data['id'] = 0;
+				}
+				
+        $this->dbprefix=$this->config->get('dbprefix');
+                                $sql = "SELECT *, l.userid as member FROM ".$this->dbprefix."list p left outer join  ".$this->dbprefix."listuser l  on p.id = l.listid && l.userid='".$data['id']."' WHERE active = 1";
+                            //    var_dump($sql);
+                                $query=$this->db->query($sql);
+				$list_data = $query->rows;
+
+			return $list_data;			
 		}
                 
 	public function getListsformessage($id) {
@@ -156,7 +179,8 @@ if($userxist == false && $data['listid'] !='')
         $this->dbprefix=$this->config->get('dbprefix');
                                 $sql = "SELECT p.id as id, p.name as name, l.listid as checked FROM ".$this->dbprefix."list p left outer join  ".$this->dbprefix."listmessage l  on p.id = l.listid && l.messageid='".$id."'";
                                 $query=$this->db->query($sql);
-			return $query->rows;			
+				$list_data = $query->rows;
+			return $list_data;			
 		}
 	
 	

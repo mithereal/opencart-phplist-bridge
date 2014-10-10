@@ -6,6 +6,7 @@
 //	
 ///////////////////////////////////////////////////////////////////
 class ModelPhplistMessage extends Model {
+
     public $dbprefix='phplist_';
     
 
@@ -63,12 +64,12 @@ public function editMessage($data){
     $messageid=$data['id'];
  
   if($data['emailalertstart'] !=''){
-  $sql="UPDATE " . $this->dbprefix . "messagedata SET  data = '" . $data['emailalertstart'] . "' WHERE id = '" . $data['id'] . "' && name = 'notify_start'";
+  $sql="UPDATE " . $this->dbprefix . "messagedata SET  data = '" . $data['emailalertstart'] . "' WHERE id = '" . $messageid . "' && name = 'notify_start'";
   $this->db->query($sql);
   }
   
   if($data['emailalertend'] !=''){
-  $sql="UPDATE " . $this->dbprefix . "messagedata SET  data = '" . $data['emailalertend'] . "' WHERE id = '" . $data['id'] . "' && name = 'notify_end'";
+  $sql="UPDATE " . $this->dbprefix . "messagedata SET  data = '" . $data['emailalertend'] . "' WHERE id = '" . $messageid . "' && name = 'notify_end'";
 $this->db->query($sql);
   }
   
