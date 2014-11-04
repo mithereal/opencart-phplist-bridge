@@ -2,8 +2,8 @@
 ///////////////////////////////////////////////////////////////////
 //	Copyright: Jason Clark
 //	Product: Phplist Bridge
-//	
-//	
+//	Distributors: www.plugmycode.com
+//	Support: www.plugmycode.com/support
 ///////////////////////////////////////////////////////////////////
 class ControllerModulePhplist extends Controller {
 	private $error = array();
@@ -579,13 +579,13 @@ $this->data['action'] = $this->url->link('module/phplist/editmessage', 'token=' 
 			'href'      => $this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' =>  ' :: '
    		);
-
+if(isset($this->request->get['messageid'])){
    		$this->data['breadcrumbs'][] = array(
        		'text'      => $this->language->get('text_editmessage'),
 			'href'      => $this->url->link('module/phplist/editmessage&messageid='.$this->request->get['messageid'], 'token=' . $this->session->data['token'], 'SSL'),
       		'separator' => ' :: '
    		);
-				
+			}
     	$this->data['cancel'] = $this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'], 'SSL');
 
         $this->load->model('phplist/lists');
@@ -633,8 +633,9 @@ $this->data['message']['emailalertend']=$this->data['message']['message_data']['
                         $this->request->post['template']=$template['value'];
                         $this->request->post['from']=$this->request->post['sender_email'];
                         $this->request->post['message']=  html_entity_decode($this->request->post['message']);
+                        if(isset($this->request->get['messageid'])){
 		$this->request->post['message_data']=$this->model_phplist_message->getMessagedata($this->request->get['messageid']);
-                        
+				  }  
                          if(!isset($this->request->post['subscribe']))
               {
                              $this->request->post['status']="draft";
@@ -1269,14 +1270,14 @@ $pagination = new Pagination();
 }
 
 public function suspendmessage(){
-    echo 'message suspended';
+  //  echo 'message suspended';
         $this->load->model('phplist/message');   
        $this->model_phplist_message->editStatus($this->request->get);
     if(!isset($_POST['ajax']))
        $this->redirect($this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'] , 'SSL'));
 }
 public function resendmessage(){
-    echo 'message resended';
+ //   echo 'message resended';
      $this->load->model('phplist/message');   
     
        $this->model_phplist_message->editStatus($this->request->get);
@@ -1284,7 +1285,7 @@ public function resendmessage(){
        $this->redirect($this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'] , 'SSL'));
 }
 public function queuemessage(){
-    echo 'message resended';
+   // echo 'message resended';
      $this->load->model('phplist/message');   
        $this->model_phplist_message->editStatus($this->request->get);
        if(!isset($_POST['ajax']))
