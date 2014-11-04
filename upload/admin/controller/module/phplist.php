@@ -927,7 +927,7 @@ public function addmember(){
     $this->data['lists']= $this->model_phplist_lists->getLists();
     
              
-             if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+             if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm() && isset($this->request->post['listid']) ) {
                  $this->request->post['listid']=$this->model_phplist_lists->getListbyname($this->request->post['listid']);
                  $this->request->post['listid']=$this->request->post['listid']['id'];
               $userid=$this->model_phplist_user->addUser($this->request->post);	
