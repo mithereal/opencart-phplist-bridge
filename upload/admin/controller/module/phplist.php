@@ -607,9 +607,10 @@ foreach($md as $val)
     $this->data['message']['message_data'][$val['name']]=$val['data'];
 }
 
+if(isset($this->data['message']['message_data'])){
 $this->data['message']['emailalertstart']=$this->data['message']['message_data']['notify_start'];
 $this->data['message']['emailalertend']=$this->data['message']['message_data']['notify_end'];
-            }
+            }}
         
         if($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validateForm())
             {
@@ -1120,7 +1121,7 @@ public function deletemember(){
     $this->load->model('phplist/lists');
     $this->model_phplist_user->delete($id);
   $this->model_phplist_lists->deleteListuser($id);
-     echo 'member '.$id. 'deleted';
+     //echo 'member '.$id. 'deleted';
  if(!isset($_POST['ajax']))
      $this->redirect($this->url->link('module/phplist/users', 'token=' . $this->session->data['token'] , 'SSL'));
 }
@@ -1522,7 +1523,7 @@ public function deletelist()
    $this->load->model('phplist/message');
      $this->model_phplist_lists->deleteList($id);
      $this->model_phplist_lists->deleteListusers($id);
-     echo 'test';
+   //  echo 'test';
      if(!isset($_POST['ajax']))
        $this->redirect($this->url->link('module/phplist/lists', 'token=' . $this->session->data['token'] , 'SSL'));
 }
@@ -1532,7 +1533,7 @@ public function deletemessage()
     $id = $_GET['messageid'];
     $this->load->model('phplist/message');
     $this->model_phplist_message->deleteMessage($id);
-     echo 'message '.$id. 'deleted';
+     //echo 'message '.$id. 'deleted';
      if(!isset($_POST['ajax']))
        $this->redirect($this->url->link('module/phplist/messages', 'token=' . $this->session->data['token'] , 'SSL'));
 }
@@ -1542,7 +1543,7 @@ public function deleteevent()
     $id = $_GET['eventid'];
     $this->load->model('phplist/event');
     $this->model_phplist_event->deleteEvent($id);
-     echo 'event '.$id. 'deleted';
+    // echo 'event '.$id. 'deleted';
      if(!isset($_POST['ajax']))
        $this->redirect($this->url->link('module/phplist/eventlog', 'token=' . $this->session->data['token'] , 'SSL'));
 }
